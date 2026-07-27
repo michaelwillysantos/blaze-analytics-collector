@@ -1,59 +1,22 @@
-# Blaze Analytics Collector
+# Blaze Analytics Collector 1.3 — Teste Direto
 
-Coletor 24/7, banco PostgreSQL e API para o Blaze Analytics.
+Esta versão testa coleta independente no Railway EU West (Amsterdam). Ela não depende da extensão.
 
-## O que esta primeira versão faz
+## Resultado esperado
 
-- Consulta a rodada atual em intervalo configurável.
-- Registra snapshots financeiros durante a rodada.
-- Calcula a exposição da casa para vermelho, preto e branco.
-- Sincroniza resultados recentes e associa tudo pelo mesmo ID da rodada.
-- Expõe uma API para consultar saúde, estatísticas, rodadas e snapshots.
+Nos registros:
 
-## Endpoints da API
+- sucesso: `[direct-current] OK` e `[direct-recent] OK`
+- bloqueio: `HTTP 451`
 
-- `GET /`
-- `GET /health`
-- `GET /api/stats`
-- `GET /api/rounds?limit=50`
-- `GET /api/rounds/:id`
+## Testes
 
-## Publicação no Railway
+- `/health`: mostra estado do coletor e últimos erros/sucessos.
+- `/api/direct-test`: testa imediatamente os dois endpoints.
+- `/api/stats`: confirma se rodadas e snapshots aumentam.
 
-1. Envie todos os arquivos deste projeto para o repositório GitHub.
-2. No Railway, crie um projeto usando **Repositório GitHub**.
-3. Selecione o repositório `blaze-analytics-collector`.
-4. Adicione um banco **PostgreSQL** ao mesmo projeto.
-5. No serviço do coletor, abra **Variables**.
-6. Adicione uma variável de referência:
-   - Nome: `DATABASE_URL`
-   - Valor: `${{Postgres.DATABASE_URL}}`
-7. Adicione também:
-   - `NODE_ENV=production`
-   - `BLAZE_BASE_URL=https://blaze.bet.br/api`
-   - `CURRENT_PATH=/roulette_games/current`
-   - `RECENT_PATH=/roulette_games/recent`
-   - `CURRENT_POLL_MS=2000`
-   - `RECENT_POLL_MS=5000`
-8. Aguarde o novo deploy.
-9. Em **Settings > Networking**, gere um domínio público.
-10. Abra `https://SEU-DOMINIO/health`.
+## Variáveis
 
-## Resultado esperado no /health
+Apenas `DATABASE_URL` é obrigatória. `INGEST_TOKEN` pode permanecer no Railway, mas esta versão não o utiliza.
 
-```json
-{
-  "ok": true,
-  "database": "connected",
-  "collector": {
-    "running": true
-  }
-}
-```
-
-## Observações importantes
-
-- Os endpoints utilizados não são uma API pública documentada; podem mudar ou bloquear acessos de servidor.
-- O coletor limita a frequência de requisições e possui timeout, mas você deve respeitar os termos do serviço de origem.
-- Dados históricos podem medir padrões, porém não garantem previsão, assertividade ou lucro.
-- Nunca publique senhas, tokens ou a URL real do banco no GitHub.
+Não tente contornar restrições geográficas ou legais. Se o serviço retornar HTTP 451, use somente uma origem de coleta permitida pelos termos e pela legislação aplicável.
